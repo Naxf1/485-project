@@ -47,17 +47,18 @@ If a session ends, the first unchecked box is where the next session continues.
 ### T-04 Duplicate rule — [FR-05, NFR-03]
 - [x] T-04a Pure `findDuplicate(ticket, candidates, now)` (building + room + category + 48 h)
 - [x] T-04b **Done when:** tests cover a match at 2 h, a non-match at 49 h, different room, different category, earliest-wins, empty history
-### T-05 Read-only tools — [FR-06, FR-07, FR-08, FR-09]
-- [ ] T-05a `search_tickets`, `get_ticket_history`, `list_technicians`, `draft_reply`
+
 ### T-05 Read-only tools — [FR-06, FR-07, FR-08, FR-09]
 - [x] T-05a `search_tickets`, `get_ticket_history`, `list_technicians`, `draft_reply`
 - [x] T-05b Tool registry with no write tool exposed
 - [x] T-05c **Done when:** each tool has tests for filtering, ordering and read-only behaviour; reply ≤ 300 chars
-- [ ] T-06a `LlmClient` interface + `FakeLlm` deterministic policy
-- [ ] T-06b `runTriage` loop with 5-call cap, Zod validation of output, error fallback
-- [ ] T-06c Technician verification against the repository
-- [ ] T-06d AgentRun audit record (tool calls, outcome, duration)
-- [ ] T-06e **Done when:** tests prove the 5-call cap, the `Other` + `needsHuman` fallback on model error, no writes during a run, and a valid suggestion for an HVAC ticket
+
+### T-06 Triage agent — [FR-03, FR-04, FR-10, FR-11, FR-17]
+- [x] T-06a `LlmClient` interface + `FakeLlm` deterministic policy
+- [x] T-06b `runTriage` loop with 5-call cap, Zod validation of output, error fallback
+- [x] T-06c Technician verification against the repository
+- [x] T-06d AgentRun audit record (tool calls, outcome, duration)
+- [x] T-06e **Done when:** tests prove the 5-call cap, the `Other` + `needsHuman` fallback on model error, no writes during a run, and a valid suggestion for an HVAC ticket
 
 ### T-07 API and role access — [FR-01, FR-12, FR-13, FR-14, FR-15, FR-16]
 - [ ] T-07a Token auth (`login`, bearer, `requireRole`)
