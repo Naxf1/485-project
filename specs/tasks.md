@@ -45,9 +45,8 @@ If a session ends, the first unchecked box is where the next session continues.
 - [x] T-03c **Done when:** tests cover every boundary (4/5/80/81 chars, 9/10/1000/1001, bad building, bad room) and assert exact error keys
 
 ### T-04 Duplicate rule — [FR-05, NFR-03]
-- [ ] T-04a Pure `findDuplicate(ticket, candidates, now)` (building + room + category + 48 h)
-- [ ] T-04b **Done when:** tests cover a match at 2 h, a non-match at 49 h, different room, different category, earliest-wins, empty history
-
+- [x] T-04a Pure `findDuplicate(ticket, candidates, now)` (building + room + category + 48 h)
+- [x] T-04b **Done when:** tests cover a match at 2 h, a non-match at 49 h, different room, different category, earliest-wins, empty history
 ### T-05 Read-only tools — [FR-06, FR-07, FR-08, FR-09]
 - [ ] T-05a `search_tickets`, `get_ticket_history`, `list_technicians`, `draft_reply`
 - [ ] T-05b Tool registry with no write tool exposed
