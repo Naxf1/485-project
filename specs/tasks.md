@@ -10,10 +10,10 @@ If a session ends, the first unchecked box is where the next session continues.
 
 ## Phase 1 — specification (step 3)
 
-- [ ] S-01 `specs/spec.md`: user stories for Reporter and Supervisor
-- [ ] S-02 `specs/spec.md`: functional requirements FR-01..FR-nn with Given/When/Then
-- [ ] S-03 `specs/spec.md`: non-functional requirements NFR-01..NFR-nn
-- [ ] S-04 `specs/spec.md`: data formats, agent definition, priority + duplicate rules, non-goals
+- [x] S-01 `specs/spec.md`: user stories for Reporter and Supervisor
+- [x] S-02 `specs/spec.md`: functional requirements FR-01..FR-18 with Given/When/Then
+- [x] S-03 `specs/spec.md`: non-functional requirements NFR-01..NFR-10
+- [x] S-04 `specs/spec.md`: data formats, agent definition, priority + duplicate rules, non-goals
 
 ## Phase 2 — plan (step 4)
 
