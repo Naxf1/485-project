@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id
+  name      String
+  role      String
+  tickets   Ticket[]   @relation("reporter")
+  approvals Ticket[]   @relation("approver")
+  audit     AuditLog[]
+}
+
+model Technician {
+  id        String   @id
+  name      String
+  skills    String
+  available Boolean  @default(true)
+  tickets   Ticket[]
+}
+
+model Ticket {
+  id            String            @id
+  title         String
+  description   String
+  building      String
+  room          String
+  reporterId    String
+  reporter      User              @relation("reporter", fields: [reporterId], references: [id])
+  status        String            @default("New")
+  category      String?
+  priority      String?
+  assignedTo    String?
+  technician    Technician?       @relation(fields: [assignedTo], references: [id])
+  duplicateOf   String?
+  original      Ticket?           @relation("duplicates", fields: [duplicateOf], references: [id])
+  duplicates    Ticket[]          @relation("duplicates")
+  createdAt     DateTime
+  approvedBy    String?
+  approver      User?             @relation("approver", fields: [approvedBy], references: [id])
+  approvedAt    DateTime?
+  humanOverride Boolean           @default(false)
+  suggestion    TriageSuggestion?
+  runs          AgentRun[]
+  audit         AuditLog[]
+}
+
+model TriageSuggestion {
+  id                  String   @id @default(cuid())
+  ticketId            String   @unique
+  ticket              Ticket   @relation(fields: [ticketId], references: [id])
+  category            String
+  priority            String
+  possibleDuplicateOf String?
+  suggestedTechnician String?
+  draftReply          String
+  reason              String
+  needsHuman          Boolean
+  createdAt           DateTime
+}
+
+model AgentRun {
+  id         String   @id @default(cuid())
+  ticketId   String
+  ticket     Ticket   @relation(fields: [ticketId], references: [id])
+  toolCalls  Int
+  outcome    String
+  durationMs Int
+  error      String?
+  createdAt  DateTime
+}
+
+model AuditLog {
+  id       String   @id @default(cuid())
+  ticketId String
+  ticket   Ticket   @relation(fields: [ticketId], references: [id])
+  actorId  String
+  actor    User     @relation(fields: [actorId], references: [id])
+  action   String
+  field    String?
+  oldValue String?
+  newValue String?
+  at       DateTime
+}

@@ -29,15 +29,15 @@ If a session ends, the first unchecked box is where the next session continues.
 ## Phase 4 — implementation
 
 ### T-01 Project setup — [NFR-10]
-- [ ] T-01a `package.json` (workspaces), TypeScript strict config, Vitest config, lint script
-- [ ] T-01b **Done when:** `npm install && npm test` runs a smoke test that passes
+- [x] T-01a `package.json`, TypeScript strict config, Vitest config, lint script
+- [x] T-01b **Done when:** `npm install && npm test` runs a smoke test that passes
 
 ### T-02 Database and synthetic seed data — [NFR-10, FR-01]
-- [ ] T-02a Prisma schema with the 6 tables from the plan
-- [ ] T-02b Repository interfaces + in-memory implementation
-- [ ] T-02c Prisma repository implementation
-- [ ] T-02d Seed script with synthetic users, technicians and tickets
-- [ ] T-02e **Done when:** `npm run db:seed` creates 2 users, 6 technicians, 12 tickets, and a repository test reads them back
+- [x] T-02a Prisma schema with the 6 tables from the plan
+- [x] T-02b Repository interfaces + in-memory implementation
+- [x] T-02c Prisma repository implementation
+- [x] T-02d Seed script with synthetic users, technicians and tickets
+- [x] T-02e **Done when:** `npm run db:seed` creates 3 users, 6 technicians, 12 tickets, and a repository test reads them back
 
 ### T-03 Form validation — [FR-01, FR-02]
 - [ ] T-03a Zod schema `newTicketSchema` (title 5–80, description 10–1000, building list, room pattern)
