@@ -49,10 +49,10 @@ If a session ends, the first unchecked box is where the next session continues.
 - [x] T-04b **Done when:** tests cover a match at 2 h, a non-match at 49 h, different room, different category, earliest-wins, empty history
 ### T-05 Read-only tools — [FR-06, FR-07, FR-08, FR-09]
 - [ ] T-05a `search_tickets`, `get_ticket_history`, `list_technicians`, `draft_reply`
-- [ ] T-05b Tool registry with no write tool exposed
-- [ ] T-05c **Done when:** each tool has tests for filtering, ordering and read-only behaviour; reply ≤ 300 chars
-
-### T-06 Triage agent — [FR-03, FR-04, FR-10, FR-11, FR-17]
+### T-05 Read-only tools — [FR-06, FR-07, FR-08, FR-09]
+- [x] T-05a `search_tickets`, `get_ticket_history`, `list_technicians`, `draft_reply`
+- [x] T-05b Tool registry with no write tool exposed
+- [x] T-05c **Done when:** each tool has tests for filtering, ordering and read-only behaviour; reply ≤ 300 chars
 - [ ] T-06a `LlmClient` interface + `FakeLlm` deterministic policy
 - [ ] T-06b `runTriage` loop with 5-call cap, Zod validation of output, error fallback
 - [ ] T-06c Technician verification against the repository
