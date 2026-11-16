@@ -40,9 +40,9 @@ If a session ends, the first unchecked box is where the next session continues.
 - [x] T-02e **Done when:** `npm run db:seed` creates 3 users, 6 technicians, 12 tickets, and a repository test reads them back
 
 ### T-03 Form validation — [FR-01, FR-02]
-- [ ] T-03a Zod schema `newTicketSchema` (title 5–80, description 10–1000, building list, room pattern)
-- [ ] T-03b Field-level error mapping
-- [ ] T-03c **Done when:** tests cover every boundary (4/5/80/81 chars, 9/10/1000/1001, bad building, bad room) and assert exact error keys
+- [x] T-03a Zod schema `newTicketSchema` (title 5–80, description 10–1000, building list, room pattern)
+- [x] T-03b Field-level error mapping
+- [x] T-03c **Done when:** tests cover every boundary (4/5/80/81 chars, 9/10/1000/1001, bad building, bad room) and assert exact error keys
 
 ### T-04 Duplicate rule — [FR-05, NFR-03]
 - [ ] T-04a Pure `findDuplicate(ticket, candidates, now)` (building + room + category + 48 h)
