@@ -61,10 +61,10 @@ If a session ends, the first unchecked box is where the next session continues.
 - [x] T-06e **Done when:** tests prove the 5-call cap, the `Other` + `needsHuman` fallback on model error, no writes during a run, and a valid suggestion for an HVAC ticket
 
 ### T-07 API and role access — [FR-01, FR-12, FR-13, FR-14, FR-15, FR-16]
-- [ ] T-07a Token auth (`login`, bearer, `requireRole`)
-- [ ] T-07b Ticket routes: create + triage, list with role scoping, get one
-- [ ] T-07c Supervisor routes: approve, edit (override + audit), status transition
-- [ ] T-07d **Done when:** Supertest tests cover 201/400/401/403/404/409, reporter sees only own tickets, override writes an audit row
+- [x] T-07a Token auth (`login`, bearer, `requireRole`)
+- [x] T-07b Ticket routes: create + triage, list with role scoping, get one
+- [x] T-07c Supervisor routes: approve, edit (override + audit), status transition
+- [x] T-07d **Done when:** Supertest tests cover 201/400/401/403/404/409, reporter sees only own tickets, override writes an audit row
 
 ### T-08 Frontend — [FR-16, NFR-08]
 - [ ] T-08a Vite + React app shell, API client, login view

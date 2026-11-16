@@ -115,13 +115,13 @@ assigned, closed or deleted and no message has been sent. The agent's only outpu
 suggestion object.
 
 ### FR-12 — Supervisor approves
-**Given** a `New` ticket with a suggestion **When** a supervisor approves it unchanged
+**Given** a `New` or `Triaged` ticket with a suggestion **When** a supervisor approves it
 **Then** the ticket becomes `Assigned` with the suggested category, priority, technician
 and duplicate link, `approvedBy` is set, `humanOverride` is `false`, and the reporter sees
 the new status.
 
 ### FR-13 — Supervisor edits (human override)
-**Given** a `New` ticket with a suggestion **When** a supervisor changes any suggested
+**Given** a `New` or `Triaged` ticket with a suggestion **When** a supervisor changes any
 field and saves **Then** the human values are stored, `humanOverride` is `true`, and an
 audit entry records actor, field, old value and new value.
 
@@ -289,9 +289,10 @@ classification and the run is flagged `needsHuman: true`.
 ## 8. Acceptance scenarios (end to end)
 
 **A1 — Happy path.** Given reporter Sara signed in, when she submits a valid AC ticket,
-then the API returns `201` with a `New` ticket and a suggestion with `category: "HVAC"`,
-`priority: "High"`, `needsHuman: false`; when supervisor Khalid approves, then the ticket
-is `Assigned` with `humanOverride: false` and Sara sees `Assigned`.
+then the API returns `201` with the ticket (now `Triaged`) and a suggestion with
+`category: "HVAC"`, `priority: "High"`, `needsHuman: false`; when supervisor Khalid
+approves, then the ticket is `Assigned` with `humanOverride: false` and Sara sees
+`Assigned`.
 
 **A2 — Duplicate.** Given ticket T-1038 (Building 6 / 2A-15 / HVAC, 2 hours ago), when a
 new ticket for the same building, room and category is triaged, then
