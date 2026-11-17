@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { PrismaClient } from '@prisma/client';
 import { createApp } from './app';
 import { FakeLlm } from './agent/fake-llm';
@@ -14,10 +16,13 @@ if (env.llmProvider !== 'fake') {
 }
 
 const prisma = new PrismaClient();
+const staticDir = join(process.cwd(), 'frontend', 'dist');
+
 const app = createApp({
   repos: createPrismaRepos(prisma),
   llm: new FakeLlm(),
   secret: env.sessionSecret,
+  ...(existsSync(staticDir) ? { staticDir } : {}),
 });
 
 const server = app.listen(env.port, () => {

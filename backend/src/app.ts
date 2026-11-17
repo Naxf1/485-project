@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import express from 'express';
 import type { ErrorRequestHandler, Express } from 'express';
 import type { LlmClient } from './agent/llm';
@@ -13,6 +14,7 @@ export interface CreateAppDeps {
   llm: LlmClient;
   secret: string;
   now?: () => Date;
+  staticDir?: string;
 }
 
 const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
@@ -48,6 +50,18 @@ export function createApp(deps: CreateAppDeps): Express {
   });
   app.use('/api/tickets', ticketRoutes(ctx));
   app.use('/api/technicians', technicianRoutes(ctx));
+
+  if (deps.staticDir) {
+    const staticDir = deps.staticDir;
+    app.use(express.static(staticDir));
+    app.use((req, res, next) => {
+      if (req.path.startsWith('/api')) {
+        next();
+        return;
+      }
+      res.sendFile(join(staticDir, 'index.html'));
+    });
+  }
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'NOT_FOUND', message: 'Unknown endpoint.' });

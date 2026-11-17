@@ -67,10 +67,10 @@ If a session ends, the first unchecked box is where the next session continues.
 - [x] T-07d **Done when:** Supertest tests cover 201/400/401/403/404/409, reporter sees only own tickets, override writes an audit row
 
 ### T-08 Frontend — [FR-16, NFR-08]
-- [ ] T-08a Vite + React app shell, API client, login view
-- [ ] T-08b Reporter: new ticket form with field errors, my tickets view
-- [ ] T-08c Supervisor: queue, review with approve/edit/status
-- [ ] T-08d **Done when:** `npm run build` succeeds and the flow works against the API
+- [x] T-08a Vite + React app shell, API client, login view
+- [x] T-08b Reporter: new ticket form with field errors, my tickets view
+- [x] T-08c Supervisor: queue, review with approve/edit/status
+- [x] T-08d **Done when:** `npm run build` succeeds and the flow works against the API
 
 ### T-09 AI behaviour tests — [NFR-04, NFR-05, FR-18]
 - [ ] T-09a Repeated-run test: 20 runs, category agreement ≥ 95 %, pass rate printed

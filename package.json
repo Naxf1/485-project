@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsx watch backend/src/server.ts",
     "dev:web": "vite --config frontend/vite.config.ts",
-    "build": "npm run lint && vite build --config frontend/vite.config.ts",
+    "build": "npm run lint && tsc -p frontend/tsconfig.json --noEmit && vite build --config frontend/vite.config.ts",
     "start": "tsx backend/src/server.ts",
     "test": "vitest run",
     "test:watch": "vitest",

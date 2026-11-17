@@ -110,7 +110,7 @@ async function draftReply(args: unknown, ctx: ToolContext): Promise<unknown> {
   if (!ticket) throw new Error(`TICKET_NOT_FOUND:${parsed.ticketId}`);
 
   const text =
-    `Thanks for reporting. A ${parsed.category} technician will check ` +
+    `Thanks for reporting. A technician from the ${parsed.category} team will check ` +
     `room ${ticket.room} in ${ticket.building} for this ${parsed.priority} priority issue.`;
 
   return { text: text.slice(0, MAX_REPLY_LENGTH) };
