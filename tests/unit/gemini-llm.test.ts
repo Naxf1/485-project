@@ -179,6 +179,72 @@ describe('GeminiLlm — tool round trip', () => {
       content: '{"ids":["T-1038"]}',
     });
   });
+
+  it('keeps the thought signature that Gemini attaches to a tool call', async () => {
+    const { fetchImpl } = recorder([
+      jsonResponse({
+        choices: [
+          {
+            message: {
+              content: null,
+              tool_calls: [
+                {
+                  id: 'gemini-call-1',
+                  type: 'function',
+                  function: {
+                    name: 'search_tickets',
+                    arguments: JSON.stringify({ building: 'Building 6' }),
+                  },
+                  extra_content: { google: { thought_signature: 'sig-123' } },
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    ]);
+    const llm = new GeminiLlm({ apiKey: KEY, model: MODEL, fetchImpl });
+
+    const step = await llm.next(ticketMessages);
+
+    expect(step).toEqual({
+      kind: 'tool_call',
+      name: 'search_tickets',
+      args: { building: 'Building 6' },
+      signature: 'sig-123',
+    });
+  });
+
+  it('replays the thought signature so Gemini accepts the follow-up call', async () => {
+    const { calls, fetchImpl } = recorder([jsonResponse(finalBody('{}'))]);
+    const llm = new GeminiLlm({ apiKey: KEY, model: MODEL, fetchImpl });
+
+    await llm.next([
+      ...ticketMessages,
+      {
+        role: 'assistant',
+        content: JSON.stringify({
+          kind: 'tool_call',
+          name: 'search_tickets',
+          args: { building: 'Building 6' },
+          signature: 'sig-123',
+        }),
+      },
+      { role: 'tool', name: 'search_tickets', content: '{"ids":[]}' },
+    ]);
+
+    const messages = requestBody(calls[0]).messages as Record<string, unknown>[];
+    expect(messages[2]).toMatchObject({
+      role: 'assistant',
+      tool_calls: [
+        {
+          id: 'call_0',
+          function: { name: 'search_tickets' },
+          extra_content: { google: { thought_signature: 'sig-123' } },
+        },
+      ],
+    });
+  });
 });
 
 describe('GeminiLlm — final answer', () => {

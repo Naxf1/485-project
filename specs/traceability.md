@@ -1,7 +1,7 @@
 # Traceability — requirement → task → test
 
 Every requirement in `specs/spec.md` maps to at least one automated test (AGENTS.md §5).
-Measured on 2026-11-17: **19 test files, 227 tests, 1.7 s** (`npm test`).
+Measured on 2026-11-17: **19 test files, 229 tests, 1.7 s** (`npm test`).
 
 Paths are relative to the repository root. Test counts are the tests in the named `describe`
 block, not the whole file.
@@ -42,7 +42,7 @@ block, not the whole file.
 | FR-16 Reporter sees status | T-07, T-08 | `tests/integration/api.test.ts`, `tests/unit/repositories.test.ts` | own tickets only, one ticket with suggestion, other reporter 403, list filter by reporter | covered |
 | FR-17 Agent run audit | T-06 | `tests/unit/agent.test.ts` | four tool calls and an `ok` run with duration | covered |
 | FR-18 Injection resistance | T-05, T-09 | `tests/unit/injection.test.ts`, `tests/unit/agent.test.ts`, `tests/ai/injection.test.ts` | 56 stripping tests, instruction text treated as data, 3 AI-level fixture tests | covered |
-| FR-19 Pluggable real model | T-11 | `tests/unit/gemini-llm.test.ts`, `tests/unit/create-llm.test.ts`, `tests/unit/env.test.ts` | 14 adapter tests (request shape, tool round trip, fence stripping, 401/429/timeout, bad response), provider selection, `.env` loading, unknown provider rejected | covered |
+| FR-19 Pluggable real model | T-11 | `tests/unit/gemini-llm.test.ts`, `tests/unit/create-llm.test.ts`, `tests/unit/env.test.ts` | 16 adapter tests (request shape, tool round trip, fence stripping, 401/429/timeout, bad response), provider selection, `.env` loading, unknown provider rejected | covered |
 
 ## 3. Non-functional requirements
 

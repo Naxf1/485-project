@@ -61,7 +61,7 @@ loop against a real model, put a free Gemini key in `.env` and switch the provid
 ```bash
 # .env
 LLM_PROVIDER=gemini
-LLM_MODEL=gemini-2.5-flash     # any Gemini model id; empty falls back to this default
+LLM_MODEL=gemini-3.5-flash-lite     # any Gemini model id; empty falls back to this default
 LLM_API_KEY=your-key-from-aistudio.google.com
 ```
 
@@ -74,6 +74,9 @@ The adapter (`backend/src/agent/gemini-llm.ts`) talks to Gemini's OpenAI-compati
 same four read-only tools, the 5-call cap, the 15 s deadline, Zod validation of the output and the
 `Other` + `needsHuman` fallback. Free-tier limits (roughly 10 requests/minute, 1,500/day) return
 `LLM_HTTP_429`, which the loop turns into a fallback suggestion flagged for a human.
+
+Measured with `gemini-3.5-flash-lite` on 2026-11-17: one AC ticket → `HVAC` / `High`, duplicate
+`T-1038`, technician `TECH-01`, 2 tool calls, 3.6 s, `needsHuman: false`.
 
 ### Sign in
 
@@ -98,7 +101,7 @@ There is no password. Pick one of the seeded users, which stands in for a sessio
 ## Tests
 
 ```bash
-npm test          # 227 tests, ~1.7 s, no network
+npm test          # 229 tests, ~1.7 s, no network
 npm run lint      # TypeScript strict check
 npm run mutation  # Stryker on domain/ and agent/tools/ (~2 min, report in reports/mutation)
 ```
@@ -158,7 +161,7 @@ An illegal transition is rejected with `409`.
 | `PORT` | `3000` | API port |
 | `DATABASE_URL` | `file:./dev.db` | SQLite file (relative to `backend/prisma`) |
 | `LLM_PROVIDER` | `fake` | `fake` (deterministic, offline) or `gemini` (real model) |
-| `LLM_MODEL` | `gemini-2.5-flash` for gemini | model id; `fake-triage-v1` is ignored by the Gemini adapter |
+| `LLM_MODEL` | `gemini-3.5-flash-lite` for gemini | model id; `fake-triage-v1` is ignored by the Gemini adapter |
 | `LLM_API_KEY` | — | required when `LLM_PROVIDER=gemini`; never commit it |
 | `LLM_BASE_URL` | Gemini OpenAI-compatible endpoint | override for any OpenAI-compatible server |
 | `LLM_TIMEOUT_MS` | `15000` | hard deadline for one agent run |

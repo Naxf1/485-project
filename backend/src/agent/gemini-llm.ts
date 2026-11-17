@@ -5,7 +5,7 @@ import { TOOL_DEFINITIONS } from './tool-definitions';
 
 export const DEFAULT_GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai';
 
-export const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash-lite';
 
 export type FetchLike = (url: string, init: RequestInit) => Promise<Response>;
 
@@ -24,6 +24,8 @@ interface ProviderToolCall {
   id: string;
   type: 'function';
   function: { name: string; arguments: string };
+  /** Gemini requires the thought signature of a call to be sent back with it. */
+  extra_content?: { google: { thought_signature: string } };
 }
 
 type ProviderMessage =
@@ -46,6 +48,11 @@ const ProviderResponseSchema = z.object({
                   name: z.string().min(1),
                   arguments: z.string(),
                 }),
+                extra_content: z
+                  .object({
+                    google: z.object({ thought_signature: z.string().min(1) }).optional(),
+                  })
+                  .optional(),
               }),
             )
             .nullish(),
@@ -59,6 +66,7 @@ const ToolCallContentSchema = z.object({
   kind: z.literal('tool_call'),
   name: z.string().min(1),
   args: z.record(z.unknown()),
+  signature: z.string().optional(),
 });
 
 const readToolCallContent = (content: string): z.infer<typeof ToolCallContentSchema> | null => {
@@ -95,17 +103,15 @@ const toProviderMessages = (messages: readonly LlmMessage[]): ProviderMessage[] 
       const id = `call_${callCount}`;
       callCount += 1;
       pendingIds.push(id);
-      out.push({
-        role: 'assistant',
-        content: null,
-        tool_calls: [
-          {
-            id,
-            type: 'function',
-            function: { name: call.name, arguments: JSON.stringify(call.args) },
-          },
-        ],
-      });
+      const toolCall: ProviderToolCall = {
+        id,
+        type: 'function',
+        function: { name: call.name, arguments: JSON.stringify(call.args) },
+      };
+      if (call.signature) {
+        toolCall.extra_content = { google: { thought_signature: call.signature } };
+      }
+      out.push({ role: 'assistant', content: null, tool_calls: [toolCall] });
       continue;
     }
 
@@ -183,7 +189,13 @@ export class GeminiLlm implements LlmClient {
       const argsRecord = z.record(z.unknown()).safeParse(args);
       if (!argsRecord.success) throw new Error('LLM_INVALID_TOOL_ARGS');
 
-      return { kind: 'tool_call', name: toolCall.function.name, args: argsRecord.data };
+      const signature = toolCall.extra_content?.google?.thought_signature;
+      return {
+        kind: 'tool_call',
+        name: toolCall.function.name,
+        args: argsRecord.data,
+        ...(signature ? { signature } : {}),
+      };
     }
 
     const text = stripCodeFence(message?.content ?? '');

@@ -41,14 +41,14 @@ describe('createLlm — provider selection [FR-19]', () => {
     );
 
     expect(llm).toBeInstanceOf(GeminiLlm);
-    expect((llm as GeminiLlm).model).toBe('gemini-2.5-flash');
+    expect((llm as GeminiLlm).model).toBe('gemini-3.5-flash-lite');
   });
 
   it('keeps an explicit Gemini model', () => {
     const llm = createLlm(
-      envWith({ llmProvider: 'gemini', llmApiKey: 'test-key-123', llmModel: 'gemini-3.8-flash' }),
+      envWith({ llmProvider: 'gemini', llmApiKey: 'test-key-123', llmModel: 'gemini-3.5-flash-lite' }),
     );
 
-    expect((llm as GeminiLlm).model).toBe('gemini-3.8-flash');
+    expect((llm as GeminiLlm).model).toBe('gemini-3.5-flash-lite');
   });
 });

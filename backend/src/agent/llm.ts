@@ -7,7 +7,13 @@ export type LlmMessage =
   | { role: 'tool'; name: ToolName; content: string };
 
 export type LlmStep =
-  | { kind: 'tool_call'; name: string; args: Record<string, unknown> }
+  | {
+      kind: 'tool_call';
+      name: string;
+      args: Record<string, unknown>;
+      /** Opaque provider token that must be replayed with the call (Gemini thought signature). */
+      signature?: string;
+    }
   | { kind: 'final'; text: string };
 
 export interface LlmClient {
