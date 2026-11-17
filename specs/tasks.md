@@ -11,7 +11,7 @@ If a session ends, the first unchecked box is where the next session continues.
 ## Phase 1 — specification
 
 - [x] S-01 `specs/spec.md`: user stories for Reporter and Supervisor
-- [x] S-02 `specs/spec.md`: functional requirements FR-01..FR-18 with Given/When/Then
+- [x] S-02 `specs/spec.md`: functional requirements FR-01..FR-19 with Given/When/Then
 - [x] S-03 `specs/spec.md`: non-functional requirements NFR-01..NFR-10
 - [x] S-04 `specs/spec.md`: data formats, agent definition, priority + duplicate rules, non-goals
 
@@ -81,6 +81,11 @@ If a session ends, the first unchecked box is where the next session continues.
 ### T-10 Mutation testing — [NFR-06]
 - [x] T-10a Stryker config for `domain/` and `agent/tools/`
 - [x] T-10b **Done when:** `npm run mutation` produces a report with score ≥ 60 % (measured: 77.10 %)
+
+### T-11 Real model provider — [FR-19]
+- [x] T-11a `GeminiLlm` behind `LlmClient`: OpenAI-compatible endpoint, tool calling, timeout, 401/429 handling
+- [x] T-11b `createLlm` factory (fake by default, gemini when keyed) and a `.env` loader so `npm start` reads `.env`
+- [x] T-11c **Done when:** tests cover request shape, the tool round trip, error mapping and provider selection, and the app runs with `LLM_PROVIDER=gemini`
 
 ## Phase 5 — close-out
 

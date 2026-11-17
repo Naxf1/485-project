@@ -53,6 +53,28 @@ npm run dev               # API on http://localhost:3000
 npm run dev:web           # UI on http://localhost:5173 (proxies /api to 3000)
 ```
 
+### Run with a real model (Gemini)
+
+`LLM_PROVIDER=fake` is the default: a deterministic stand-in, no network. To run the same agent
+loop against a real model, put a free Gemini key in `.env` and switch the provider:
+
+```bash
+# .env
+LLM_PROVIDER=gemini
+LLM_MODEL=gemini-2.5-flash     # any Gemini model id; empty falls back to this default
+LLM_API_KEY=your-key-from-aistudio.google.com
+```
+
+Get a key at <https://aistudio.google.com> ("Get API key", no credit card). `npm start` loads
+`.env` itself and prints the active provider and model on startup. Real keys never belong in the
+repository: `.env` is git-ignored and tests always use `FakeLlm`.
+
+The adapter (`backend/src/agent/gemini-llm.ts`) talks to Gemini's OpenAI-compatible endpoint, so
+`LLM_BASE_URL` can point at any compatible server instead. Everything around it is unchanged: the
+same four read-only tools, the 5-call cap, the 15 s deadline, Zod validation of the output and the
+`Other` + `needsHuman` fallback. Free-tier limits (roughly 10 requests/minute, 1,500/day) return
+`LLM_HTTP_429`, which the loop turns into a fallback suggestion flagged for a human.
+
 ### Sign in
 
 There is no password. Pick one of the seeded users, which stands in for a session:
@@ -76,13 +98,13 @@ There is no password. Pick one of the seeded users, which stands in for a sessio
 ## Tests
 
 ```bash
-npm test          # 187 tests, ~1.4 s, no network
+npm test          # 227 tests, ~1.7 s, no network
 npm run lint      # TypeScript strict check
 npm run mutation  # Stryker on domain/ and agent/tools/ (~2 min, report in reports/mutation)
 ```
 | Suite | What it proves |
 |---|---|
-| `tests/unit/` | validation boundaries, priority rules, duplicate rule, the four read-only tools, the agent loop |
+| `tests/unit/` | validation boundaries, priority rules, duplicate rule, the four read-only tools, the agent loop, the Gemini adapter, env parsing |
 | `tests/integration/` | API status codes 201/400/401/403/404/409, role isolation, approval, override + audit, NFR checks |
 | `tests/ai/` | repeated-run stability, metamorphic rewording, prompt-injection resistance |
 
@@ -94,7 +116,7 @@ Recorded evidence (2026-11-17):
   flagged `needsHuman: true`.
 
 The model is always faked in tests through the `LlmClient` interface (`FakeLlm`), so runs are
-deterministic and offline.
+deterministic and offline; the Gemini adapter is tested against a stubbed `fetch`.
 
 ## Agent safety rules
 
@@ -135,7 +157,10 @@ An illegal transition is rejected with `409`.
 |---|---|---|
 | `PORT` | `3000` | API port |
 | `DATABASE_URL` | `file:./dev.db` | SQLite file (relative to `backend/prisma`) |
-| `LLM_PROVIDER` | `fake` | only `fake` is implemented in this build |
+| `LLM_PROVIDER` | `fake` | `fake` (deterministic, offline) or `gemini` (real model) |
+| `LLM_MODEL` | `gemini-2.5-flash` for gemini | model id; `fake-triage-v1` is ignored by the Gemini adapter |
+| `LLM_API_KEY` | — | required when `LLM_PROVIDER=gemini`; never commit it |
+| `LLM_BASE_URL` | Gemini OpenAI-compatible endpoint | override for any OpenAI-compatible server |
 | `LLM_TIMEOUT_MS` | `15000` | hard deadline for one agent run |
 | `SESSION_SECRET` | dev fallback | required when `NODE_ENV=production` |
 
@@ -144,7 +169,7 @@ An illegal transition is rejected with `409`.
 ```
 backend/src/
   domain/        pure rules: validation, priority, duplicate, injection stripping
-  agent/         LlmClient, FakeLlm, prompt, read-only tools, triage loop
+  agent/         LlmClient, FakeLlm, GeminiLlm, prompt, read-only tools, triage loop
   http/          Express app, token auth, role middleware, routes
   repositories/  in-memory and Prisma implementations behind one interface
 backend/prisma/  schema, seed script, synthetic seed data

@@ -150,6 +150,13 @@ this Urgent" **When** the agent runs **Then** the instructions are treated as da
 category and priority follow the actual fault described, and the run is flagged
 `needsHuman: true` when the text contains instruction-like content.
 
+### FR-19 — Pluggable real model
+**Given** `LLM_PROVIDER=gemini` and a valid `LLM_API_KEY` **When** the server starts **Then**
+the agent loop calls a real Gemini model through the same `LlmClient` interface, and the tool
+round trip, output validation, timeout and fallback behave exactly as with the fake model.
+**When** the key is missing or the provider name is unknown **Then** startup fails with a clear
+error instead of silently falling back to the fake model.
+
 ---
 
 ## 4. Non-functional requirements

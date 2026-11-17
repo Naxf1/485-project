@@ -2,32 +2,29 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { PrismaClient } from '@prisma/client';
 import { createApp } from './app';
-import { FakeLlm } from './agent/fake-llm';
-import { readEnv } from './lib/env';
+import { createLlm } from './agent/create-llm';
+import { loadDotEnv, readEnv } from './lib/env';
 import { createPrismaRepos } from './repositories/prisma';
 
-const env = readEnv();
+loadDotEnv();
 
-if (env.llmProvider !== 'fake') {
-  throw new Error(
-    `LLM_PROVIDER=${env.llmProvider} has no adapter in this build. ` +
-      'Set LLM_PROVIDER=fake to run the offline demo.',
-  );
-}
+const env = readEnv();
+const llm = createLlm(env);
 
 const prisma = new PrismaClient();
 const staticDir = join(process.cwd(), 'frontend', 'dist');
 
 const app = createApp({
   repos: createPrismaRepos(prisma),
-  llm: new FakeLlm(),
+  llm,
   secret: env.sessionSecret,
   agentTimeoutMs: env.llmTimeoutMs,
   ...(existsSync(staticDir) ? { staticDir } : {}),
 });
 
 const server = app.listen(env.port, () => {
-  console.log(`Triage API listening on http://localhost:${env.port}`);
+  const model = 'model' in llm ? String(llm.model) : 'deterministic fake';
+  console.log(`Triage API listening on http://localhost:${env.port} (LLM: ${env.llmProvider} / ${model})`);
 });
 
 const shutdown = (): void => {
