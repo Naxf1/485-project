@@ -79,8 +79,8 @@ If a session ends, the first unchecked box is where the next session continues.
 - [x] T-09d **Done when:** all three suites pass and the measured pass rate is recorded in the test output
 
 ### T-10 Mutation testing — [NFR-06]
-- [ ] T-10a Stryker config for `domain/` and `agent/tools/`
-- [ ] T-10b **Done when:** `npm run mutation` produces a report with score ≥ 60 %
+- [x] T-10a Stryker config for `domain/` and `agent/tools/`
+- [x] T-10b **Done when:** `npm run mutation` produces a report with score ≥ 60 % (measured: 77.10 %)
 
 ## Phase 5 — close-out
 
