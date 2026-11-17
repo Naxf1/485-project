@@ -76,7 +76,6 @@ npm test          # 187 tests, ~1.4 s, no network
 npm run lint      # TypeScript strict check
 npm run mutation  # Stryker on domain/ and agent/tools/ (~2 min, report in reports/mutation)
 ```
-npm run mutation  # Stryker on domain/ and agent/tools/ (a few minutes, report in reports/mutation)
 | Suite | What it proves |
 |---|---|
 | `tests/unit/` | validation boundaries, priority rules, duplicate rule, the four read-only tools, the agent loop |
