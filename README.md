@@ -19,15 +19,29 @@ before anything is saved or assigned. The agent never writes.
 All data is synthetic: three fictional users, six technicians and twelve tickets. There is no
 connection to any real KSU system.
 
-## Requirements
+## Run it (step by step)
 
-- Node.js 24 (any current LTS works)
-- npm 10+
+Six steps from a fresh clone to a running app. Steps 1–4 use the built-in fake model, so
+everything works with no key and no network; step 5 puts Gemini in the loop.
 
-## Install and seed
+### 1. Prerequisites
+
+- Node.js 24 (any current LTS works) and npm 10+
+- git
+- For step 5 only: a free Gemini API key from <https://aistudio.google.com> — "Get API key",
+  no credit card
+
+### 2. Clone and install
 
 ```bash
+git clone https://github.com/Naxf1/485-project.git
+cd 485-project
 npm install
+```
+
+### 3. Create `.env` and the database
+
+```bash
 cp .env.example .env      # Windows: copy .env.example .env
 npm run db:generate       # Prisma client
 npm run db:push           # create the SQLite schema
@@ -37,26 +51,29 @@ npm run db:seed           # 3 users, 6 technicians, 12 tickets, suggestions
 `db:seed` prints the row counts it created. The database file is `backend/prisma/dev.db` and
 is git-ignored.
 
-## Run
-
-**Single server (built frontend, one port).** This is the demo path:
+### 4. Build and start
 
 ```bash
 npm run build             # lint + frontend type-check + Vite build into frontend/dist
 npm start                 # http://localhost:3000
 ```
 
-**Development (two terminals, hot reload):**
+Startup prints the active provider, for example:
+
+```
+Triage API listening on http://localhost:3000 (LLM: fake / deterministic fake)
+```
+
+For hot reload instead of a build, use two terminals:
 
 ```bash
 npm run dev               # API on http://localhost:3000
 npm run dev:web           # UI on http://localhost:5173 (proxies /api to 3000)
 ```
 
-### Run with a real model (Gemini)
+### 5. Switch the agent to Gemini
 
-`LLM_PROVIDER=fake` is the default: a deterministic stand-in, no network. To run the same agent
-loop against a real model, put a free Gemini key in `.env` and switch the provider:
+Add the key to `.env` and change two lines — nothing else in the project moves:
 
 ```bash
 # .env
@@ -65,9 +82,19 @@ LLM_MODEL=gemini-3.5-flash-lite     # any Gemini model id; empty falls back to t
 LLM_API_KEY=your-key-from-aistudio.google.com
 ```
 
-Get a key at <https://aistudio.google.com> ("Get API key", no credit card). `npm start` loads
-`.env` itself and prints the active provider and model on startup. Real keys never belong in the
-repository: `.env` is git-ignored and tests always use `FakeLlm`.
+Restart `npm start`. `.env` is read once at startup, and real environment variables win over the
+file, so `LLM_PROVIDER=gemini npm start` also works for a one-off run (PowerShell:
+`$env:LLM_PROVIDER="gemini"; npm start`).
+
+The startup line must now read:
+
+```
+Triage API listening on http://localhost:3000 (LLM: gemini / gemini-3.5-flash-lite)
+```
+
+That line is the proof the real model is in the loop — if it still says `fake`, the provider did
+not load. Real keys never belong in the repository: `.env` is git-ignored and the test suite
+always uses `FakeLlm`, so `npm test` needs no key.
 
 The adapter (`backend/src/agent/gemini-llm.ts`) talks to Gemini's OpenAI-compatible endpoint, so
 `LLM_BASE_URL` can point at any compatible server instead. Everything around it is unchanged: the
@@ -75,8 +102,39 @@ same four read-only tools, the 5-call cap, the 15 s deadline, Zod validation of 
 `Other` + `needsHuman` fallback. Free-tier limits (roughly 10 requests/minute, 1,500/day) return
 `LLM_HTTP_429`, which the loop turns into a fallback suggestion flagged for a human.
 
+### 6. Confirm the model is really answering
+
+Open <http://localhost:3000>, sign in as `U-17`, and submit a ticket for **Building 6 / 2A-15**
+describing a broken AC. A real run takes 3–11 s — one model call per tool step — while the fake
+model answers instantly, so latency is the quickest tell.
+
 Measured with `gemini-3.5-flash-lite` on 2026-11-17: one AC ticket → `HVAC` / `High`, duplicate
 `T-1038`, technician `TECH-01`, 2 tool calls, 3.6 s, `needsHuman: false`.
+
+From a terminal instead of the UI:
+
+```bash
+curl http://localhost:3000/api/health        # {"status":"ok"}
+
+TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
+  -H "content-type: application/json" -d '{"userId":"U-17"}' | jq -r .token)
+
+curl -s -X POST http://localhost:3000/api/tickets \
+  -H "content-type: application/json" -H "Authorization: Bearer $TOKEN" \
+  -d '{"title":"AC not cooling","description":"The AC in room 2A-15 is not cooling and the room is very hot.","building":"Building 6","room":"2A-15"}'
+```
+
+### If something goes wrong
+
+| Symptom | Cause and fix |
+|---|---|
+| `LLM_API_KEY is required` | provider is `gemini` but the key line in `.env` is empty |
+| `LLM_HTTP_401` | wrong or revoked key |
+| `LLM_HTTP_404 ... no longer available` | that model is closed to new keys — set `LLM_MODEL=gemini-3.5-flash-lite` |
+| `LLM_HTTP_503` | model overloaded — retry, or pick another id |
+| `LLM_HTTP_429` | free-tier quota hit (about 10 requests/minute); wait a minute |
+| Suggestion is `Other` + `needsHuman: true` | the run failed or passed the 15 s deadline; `GET /api/tickets/:id` shows the run and its error |
+| `EADDRINUSE :::3000` | an earlier server still holds the port — stop it and start again |
 
 ### Sign in
 
@@ -105,6 +163,7 @@ npm test          # 229 tests, ~1.7 s, no network
 npm run lint      # TypeScript strict check
 npm run mutation  # Stryker on domain/ and agent/tools/ (~2 min, report in reports/mutation)
 ```
+
 | Suite | What it proves |
 |---|---|
 | `tests/unit/` | validation boundaries, priority rules, duplicate rule, the four read-only tools, the agent loop, the Gemini adapter, env parsing |
