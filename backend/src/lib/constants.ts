@@ -51,6 +51,9 @@ export const DUPLICATE_WINDOW_HOURS = 48;
 
 export const MAX_REPLY_LENGTH = 300;
 
+/** Hard ceiling for one agent run (NFR-02). */
+export const AGENT_TIMEOUT_MS = 15_000;
+
 export const TITLE_MIN = 5;
 export const TITLE_MAX = 80;
 export const DESCRIPTION_MIN = 10;

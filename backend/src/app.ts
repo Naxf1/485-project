@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { AGENT_TIMEOUT_MS } from './lib/constants';
 import express from 'express';
 import type { ErrorRequestHandler, Express } from 'express';
 import type { LlmClient } from './agent/llm';
@@ -14,6 +15,7 @@ export interface CreateAppDeps {
   llm: LlmClient;
   secret: string;
   now?: () => Date;
+  agentTimeoutMs?: number;
   staticDir?: string;
 }
 
@@ -33,6 +35,7 @@ export function createApp(deps: CreateAppDeps): Express {
     llm: deps.llm,
     secret: deps.secret,
     now: deps.now ?? (() => new Date()),
+    agentTimeoutMs: deps.agentTimeoutMs ?? AGENT_TIMEOUT_MS,
   };
 
   const app = express();

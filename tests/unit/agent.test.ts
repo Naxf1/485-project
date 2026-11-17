@@ -4,7 +4,7 @@ import { runTriage } from '../../backend/src/agent/triage-agent';
 import type { LlmClient, LlmStep } from '../../backend/src/agent/llm';
 import { createInMemoryRepos } from '../../backend/src/repositories/in-memory';
 import type { Ticket } from '../../backend/src/domain/types';
-
+import { AGENT_TIMEOUT_MS } from '../../backend/src/lib/constants';
 const now = new Date('2026-10-20T12:00:00.000Z');
 
 const hoursAgo = (hours: number): string =>
@@ -229,5 +229,31 @@ describe('agent safety [FR-10, FR-11]', () => {
     expect(result.suggestion.category).toBe('Plumbing');
     expect(result.suggestion.priority).toBe('Medium');
     expect(result.suggestion.needsHuman).toBe(true);
+  });
+});
+
+describe('agent timeout [NFR-02]', () => {
+  it('stops a hung model at the deadline and falls back to Other', async () => {
+    const repos = reposWith();
+    const hung: LlmClient = { next: () => new Promise<LlmStep>(() => {}) };
+
+    const startedAt = Date.now();
+    const result = await runTriage(ticket(), { repos, llm: hung, now, timeoutMs: 20 });
+    const elapsed = Date.now() - startedAt;
+
+    expect(result.run.outcome).toBe('error');
+    expect(result.run.error).toContain('timeout');
+    expect(result.suggestion.category).toBe('Other');
+    expect(result.suggestion.priority).toBe('Medium');
+    expect(result.suggestion.needsHuman).toBe(true);
+    expect(elapsed).toBeLessThan(1000);
+  });
+
+  it('keeps a normal run inside the fifteen second budget', async () => {
+    const repos = reposWith();
+    const result = await runTriage(ticket(), { repos, llm: new FakeLlm(), now });
+
+    expect(result.run.outcome).toBe('ok');
+    expect(result.run.durationMs).toBeLessThan(AGENT_TIMEOUT_MS);
   });
 });

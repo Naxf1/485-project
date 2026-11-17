@@ -6,4 +6,5 @@ export interface AppContext {
   llm: LlmClient;
   secret: string;
   now: () => Date;
+  agentTimeoutMs: number;
 }

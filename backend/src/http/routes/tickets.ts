@@ -71,7 +71,12 @@ export function ticketRoutes(ctx: AppContext): Router {
 
       await ctx.repos.tickets.create(ticket);
 
-      const { suggestion } = await runTriage(ticket, { repos: ctx.repos, llm: ctx.llm, now: at });
+      const { suggestion } = await runTriage(ticket, {
+        repos: ctx.repos,
+        llm: ctx.llm,
+        now: at,
+        timeoutMs: ctx.agentTimeoutMs,
+      });
       await ctx.repos.suggestions.upsert(suggestion);
       const triaged = await ctx.repos.tickets.update(ticket.id, { status: 'Triaged' });
 

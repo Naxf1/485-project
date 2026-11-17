@@ -22,6 +22,7 @@ const app = createApp({
   repos: createPrismaRepos(prisma),
   llm: new FakeLlm(),
   secret: env.sessionSecret,
+  agentTimeoutMs: env.llmTimeoutMs,
   ...(existsSync(staticDir) ? { staticDir } : {}),
 });
 

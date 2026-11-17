@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CATEGORIES, MAX_REPLY_LENGTH, MAX_TOOL_CALLS, PRIORITIES } from '../lib/constants';
+import { AGENT_TIMEOUT_MS, CATEGORIES, MAX_REPLY_LENGTH, MAX_TOOL_CALLS, PRIORITIES } from '../lib/constants';
 import type { Category } from '../lib/constants';
 import { findDuplicate } from '../domain/duplicate';
 import { stripInstructions } from '../domain/injection';
@@ -26,6 +26,8 @@ export interface TriageDeps {
   repos: Repos;
   llm: LlmClient;
   now: Date;
+  /** Hard deadline for the whole run; defaults to `AGENT_TIMEOUT_MS` (NFR-02). */
+  timeoutMs?: number;
 }
 
 export interface TriageResult {
@@ -34,6 +36,25 @@ export interface TriageResult {
 }
 
 const FALLBACK_REPLY = 'A supervisor will review this ticket.';
+
+/**
+ * Reject when `promise` has not settled within `ms`. The timer is always cleared so a
+ * slow model never keeps the process alive after the run.
+ */
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: NodeJS.Timeout | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => reject(new Error('agent timeout')), ms);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 
 function fallbackSuggestion(
   ticket: Ticket,
@@ -101,6 +122,9 @@ async function finalize(
  */
 export async function runTriage(ticket: Ticket, deps: TriageDeps): Promise<TriageResult> {
   const startedAt = Date.now();
+  const timeoutMs = deps.timeoutMs ?? AGENT_TIMEOUT_MS;
+  const deadline = startedAt + timeoutMs;
+
   const messages: LlmMessage[] = [
     { role: 'system', content: SYSTEM_PROMPT },
     {
@@ -122,7 +146,14 @@ export async function runTriage(ticket: Ticket, deps: TriageDeps): Promise<Triag
 
   try {
     for (;;) {
-      const step = await deps.llm.next(messages);
+      const remaining = deadline - Date.now();
+      if (remaining <= 0) {
+        outcome = 'error';
+        error = 'agent timeout';
+        break;
+      }
+
+      const step = await withTimeout(deps.llm.next(messages), remaining);
 
       if (step.kind === 'tool_call') {
         if (toolCalls >= MAX_TOOL_CALLS) {
