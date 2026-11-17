@@ -73,10 +73,10 @@ If a session ends, the first unchecked box is where the next session continues.
 - [x] T-08d **Done when:** `npm run build` succeeds and the flow works against the API
 
 ### T-09 AI behaviour tests — [NFR-04, NFR-05, FR-18]
-- [ ] T-09a Repeated-run test: 20 runs, category agreement ≥ 95 %, pass rate printed
-- [ ] T-09b Metamorphic test: rewording does not change category
-- [ ] T-09c Prompt-injection test: instruction text does not change category or priority, flags `needsHuman`
-- [ ] T-09d **Done when:** all three suites pass and the measured pass rate is recorded in the test output
+- [x] T-09a Repeated-run test: 20 runs, category agreement ≥ 95 %, pass rate printed
+- [x] T-09b Metamorphic test: rewording does not change category
+- [x] T-09c Prompt-injection test: instruction text does not change category or priority, flags `needsHuman`
+- [x] T-09d **Done when:** all three suites pass and the measured pass rate is recorded in the test output
 
 ### T-10 Mutation testing — [NFR-06]
 - [ ] T-10a Stryker config for `domain/` and `agent/tools/`
