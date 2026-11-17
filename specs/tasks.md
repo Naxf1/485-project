@@ -87,4 +87,4 @@ If a session ends, the first unchecked box is where the next session continues.
 - [x] C-01a Close the NFR test gaps: validation cost (NFR-01), agent deadline (NFR-02),
       secret scan (NFR-07), accessible UI source (NFR-08), API latency (NFR-09)
 - [ ] C-01b `specs/traceability.md` (requirement → task → test)
-- [ ] C-02 README: install, seed, run, test
+- [x] C-01b `specs/traceability.md` (requirement → task → test)
