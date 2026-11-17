@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img">
+  <title>Fixlane</title>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="8.5" fill="#0f766e" />
+  <circle cx="20.5" cy="10.5" r="6.1" fill="#ffffff" />
+  <path d="M23.7 10.5 22.1 13.3H18.9L17.3 10.5l1.6-2.8h3.2Z" fill="#0f766e" />
+  <path
+    d="M16.6 15.2 13.4 18.4Q11.4 20.4 13.6 22.4 14.8 24.1 16.6 24.1"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="3.4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M22.4 24.1H24.8"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="3.4"
+    stroke-linecap="round"
+  />
+</svg>

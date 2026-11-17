@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api, type User } from '../api';
+import { BrandLink } from '../components/BrandLink';
 
 const DEMO_USERS = [
   { id: 'U-17', name: 'Sara Al-Harbi', role: 'reporter' },
@@ -27,6 +28,9 @@ export function LoginView({ onSignedIn }: { onSignedIn: (user: User) => void }):
 
   return (
     <main className="shell shell-narrow">
+      <div className="brand-row">
+        <BrandLink role={null} />
+      </div>
       <section className="card">
         <h1>Sign in</h1>
         <p className="muted">

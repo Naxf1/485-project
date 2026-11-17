@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, getToken, setToken, type User } from './api';
+import { BrandLink } from './components/BrandLink';
+import { ThemeToggle } from './components/ThemeToggle';
+import { homeViewFor } from './nav';
 import { LoginView } from './views/LoginView';
 import { NewTicketView } from './views/NewTicketView';
 import { MyTicketsView } from './views/MyTicketsView';
@@ -71,10 +74,7 @@ export function App(): JSX.Element {
   return (
     <div className="app">
       <header className="topbar">
-        <div className="brand">
-          <span className="brand-mark" aria-hidden="true" />
-          <span>Fixlane</span>
-        </div>
+        <BrandLink role={user.role} onHome={() => setView(homeViewFor(user.role))} />
         <nav className="nav" aria-label="Main">
           {isSupervisor ? (
             <button
@@ -107,6 +107,7 @@ export function App(): JSX.Element {
           <span>
             {user.name} <span className="muted">· {user.role}</span>
           </span>
+          <ThemeToggle />
           <button type="button" className="button button-quiet" onClick={signOut}>
             Sign out
           </button>
