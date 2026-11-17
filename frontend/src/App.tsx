@@ -73,7 +73,7 @@ export function App(): JSX.Element {
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark" aria-hidden="true" />
-          <span>Campus Maintenance Triage</span>
+          <span>Fixlane</span>
         </div>
         <nav className="nav" aria-label="Main">
           {isSupervisor ? (

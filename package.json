@@ -1,9 +1,9 @@
 {
-  "name": "campus-triage-agent",
+  "name": "fixlane",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Campus Maintenance Ticket Triage Agent — SWE 485 project",
+  "description": "Fixlane — Campus Maintenance Ticket Triage Agent, SWE 485 project",
   "scripts": {
     "dev": "tsx watch backend/src/server.ts",
     "dev:web": "vite --config frontend/vite.config.ts",

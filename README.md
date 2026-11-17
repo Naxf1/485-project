@@ -1,4 +1,8 @@
-# Campus Maintenance Ticket Triage Agent
+# Fixlane
+
+An agent that suggests, a supervisor who decides.
+
+## Campus Maintenance Ticket Triage Agent
 
 SWE 485 course project (King Saud University). A reporter submits a maintenance ticket; one
 AI triage agent reads it, uses read-only tools to look at recent tickets, room history and
